@@ -54,20 +54,16 @@ public class LogInSignUp extends JPanel {
 
         gbc.gridy++;
         JLabel emailLabel = new JLabel("Email:");
-        emailField = new JTextField(15);
         cardPanel.add(emailLabel, gbc);
-
         gbc.gridy++;
-        JTextField emailField = new JTextField(15);
+        emailField = new JTextField(15);
         cardPanel.add(emailField, gbc);
 
         gbc.gridy++;
         JLabel passwordLabel = new JLabel("Password:");
-        passwordField = new JPasswordField(15);
         cardPanel.add(passwordLabel, gbc);
-
         gbc.gridy++;
-        JPasswordField passwordField = new JPasswordField(15);
+        passwordField = new JPasswordField(15);
         cardPanel.add(passwordField, gbc);
 
         gbc.gridy++;
@@ -109,7 +105,7 @@ public class LogInSignUp extends JPanel {
         } else if (isValidLoginCredentials(username, password)) {
             // logic ( navigate to the next screen)
             CardLayout cardLayout = (CardLayout) getParent().getLayout();
-            cardLayout.show(getParent(), "welcome");
+            cardLayout.show(getParent(), "homeScreen");
             home.displayWelcomeMessage();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid credentials. Try again.", "Login Error", JOptionPane.ERROR_MESSAGE);

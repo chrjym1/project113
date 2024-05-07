@@ -1,8 +1,10 @@
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import homeScreen.Home;
 import Authentication.LogInSignUp;
 import homeScreen.Home;
+import java.awt.CardLayout;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +16,11 @@ public class Main {
             Home home = new Home(); 
 
             LogInSignUp logInSignUp = new LogInSignUp(home);
-            frame.add(logInSignUp);
+            JPanel cardPanel = new JPanel(new CardLayout());
+            cardPanel.add(logInSignUp, "login"); //  login screen with name "login"
+            cardPanel.add(home, "homeScreen"); //  home screen with name "homeScreen"
+
+            frame.add(cardPanel);
             
             
 
