@@ -15,6 +15,7 @@ public class LogInSignUp extends JPanel {
     public LogInSignUp(Home home) {
         this.home = home;
         initializePanels();
+        addEnterKeyListener();
     }
 
     private void initializePanels() {
@@ -167,6 +168,30 @@ private boolean isValidLoginCredentials(String username, String password) {
     private boolean isValidSignUp(String username, String password) {
 
         return !username.isEmpty() && password.length() >= 8;
+    }
+
+    /**
+     * @author: Lexuzh Herrera
+     * @date:  05/21/2024
+     * 
+     * add enter key functionality when loging in.
+     */
+    private void addEnterKeyListener() {
+        // Create an action for the Enter key
+        Action enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleLogin();
+            }
+        };
+    
+        // Get the input and action maps of the panel
+        InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = this.getActionMap();
+    
+        // Bind the Enter key to the action
+        inputMap.put(KeyStroke.getKeyStroke("ENTER"), "enterAction");
+        actionMap.put("enterAction", enterAction);
     }
 }
     
