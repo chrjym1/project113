@@ -3,8 +3,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import homeScreen.Home;
 import Authentication.LogInSignUp;
-import java.awt.CardLayout;
 import homeScreen.CalendarPanel;
+import java.awt.CardLayout;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,22 +13,26 @@ public class Main {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(1280, 700);
  
+             // Create a CardLayout and a JPanel to hold the cards
+             CardLayout cardLayout = new CardLayout();
+             JPanel cardPanel2 = new JPanel(cardLayout);
+
             Home home = new Home(); 
+             home.setCardLayoutAndPanel(cardLayout, cardPanel2);
 
             LogInSignUp logInSignUp = new LogInSignUp(home);
             JPanel cardPanel = new JPanel(new CardLayout());
-            cardPanel.add(logInSignUp, "login"); // login screen with name "login"
-            cardPanel.add(home, "homeScreen"); // home screen with name "homeScreen"
-            
-            // Add CalendarPanel
-            CalendarPanel calendarPanel = new CalendarPanel((CardLayout) cardPanel.getLayout(), cardPanel);
-            cardPanel.add(calendarPanel, "calendar"); // calendar panel with name "calendar"
-
-            home.setCardLayoutAndPanel((CardLayout) cardPanel.getLayout(), cardPanel);
-            
+            CalendarPanel calendarPanel = new CalendarPanel();
+            cardPanel.add(logInSignUp, "login"); //  login screen with name "login"
+            cardPanel.add(home, "homeScreen"); //  home screen with name "homeScreen"
+            cardPanel.add(calendarPanel, "calendar");
             frame.add(cardPanel);
             
+            
+
             frame.setVisible(true);
+
         });
     }
 }
+

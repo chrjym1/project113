@@ -142,7 +142,6 @@ public class LogInSignUp extends JPanel {
             // logic ( navigate to the next screen)
             CardLayout cardLayout = (CardLayout) getParent().getLayout();
             cardLayout.show(getParent(), "homeScreen");
-            home.displayWelcomeMessage();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid credentials. Try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -171,7 +170,7 @@ private boolean isValidLoginCredentials(String username, String password) {
     }
 
     /**
-     * @author: Lexuzh Herrera
+     * @author: Lexuzh Herrera  
      * @date:  05/21/2024
      * 
      * add enter key functionality when loging in.
