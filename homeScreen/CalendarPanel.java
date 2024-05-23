@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -17,11 +19,12 @@ public class CalendarPanel extends JPanel {
     private JTable calendarTable;
     private DefaultTableModel tableModel;
     private LocalDate currentDate;
+    private Home homePanel;
 
-    public CalendarPanel(CardLayout cardLayout, JPanel cardPanel) {
+    public CalendarPanel(CardLayout cardLayout, JPanel cardPanel, Home homePanel) {
+        this.homePanel = homePanel;
         setLayout(new BorderLayout());
 
-        // Get the current date in the Philippines time zone
         ZoneId philippinesZoneId = ZoneId.of("Asia/Manila");
         currentDate = ZonedDateTime.now(philippinesZoneId).toLocalDate();
 
@@ -38,6 +41,21 @@ public class CalendarPanel extends JPanel {
         String[] columnNames = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
         tableModel = new DefaultTableModel(null, columnNames);
         calendarTable = new JTable(tableModel);
+        calendarTable.setRowSelectionAllowed(false);
+        calendarTable.setCellSelectionEnabled(true);
+
+        calendarTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = calendarTable.rowAtPoint(e.getPoint());
+                int col = calendarTable.columnAtPoint(e.getPoint());
+                Object value = tableModel.getValueAt(row, col);
+                if (value != null) {
+                    int day = (Integer) value;
+                    homePanel.displayScheduleForDate(day);
+                }
+            }
+        });
 
         dayLabel = new JLabel("", SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.PLAIN, 18));

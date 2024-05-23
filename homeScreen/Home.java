@@ -21,6 +21,26 @@ public class Home extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardPanel;
 
+    private ArrayList<ScheduleEntry> schedules = new ArrayList<>();
+    // ...
+    
+    // ScheduleEntry inner class to hold schedule details
+    class ScheduleEntry {
+        String subject;
+        String instructor;
+        String day;
+        String time;
+        int date;
+        
+        ScheduleEntry(String subject, String instructor, String day, String time, int date) {
+            this.subject = subject;
+            this.instructor = instructor;
+            this.day = day;
+            this.time = time;
+            this.date = date;
+        }
+    }
+
     public Home() {
         setLayout(new BorderLayout());
         initializeComponents();
@@ -159,6 +179,10 @@ public class Home extends JPanel {
         // Add subject to subjects list
         subjects.add(subject);
 
+         // Add ScheduleEntry to schedules list
+         ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
+         schedules.add(scheduleEntry); // Add this line
+
         // Add row to tableModel
         tableModel.addRow(new Object[]{subject, day, time, instructor, date});
     }
@@ -167,6 +191,7 @@ public class Home extends JPanel {
         int selectedRow = scheduleTable.getSelectedRow();
         if (selectedRow != -1) {
             subjects.remove(selectedRow);
+            schedules.remove(selectedRow);
             tableModel.removeRow(selectedRow);
         } else {
             JOptionPane.showMessageDialog(this, "Please select a subject to remove.");
@@ -183,7 +208,7 @@ public class Home extends JPanel {
             int date = (int) dateComboBox.getSelectedItem();
 
             subjects.set(selectedRow, subject);
-
+            schedules.set(selectedRow, new ScheduleEntry(subject, instructor, day, time, date));
             // Update row in tableModel
             tableModel.setValueAt(subject, selectedRow, 0);
             tableModel.setValueAt(day, selectedRow, 1);
@@ -207,7 +232,38 @@ public class Home extends JPanel {
         cardLayout.show(cardPanel, "calendar");
     }
 
+    
+
     public void displayWelcomeMessage() {
         welcomeLabel.setText("Hello, Welcome Home");
     }
+    
+  // Method to fetch schedule entries for a specific date
+  public ArrayList<ScheduleEntry> getScheduleForDate(int date) {
+    ArrayList<ScheduleEntry> scheduleForDate = new ArrayList<>();
+    for (ScheduleEntry entry : schedules) {
+        if (entry.date == date) {
+            scheduleForDate.add(entry);
+        }
+    }
+    return scheduleForDate;
+}
+
+// Method to display schedule for a specific date
+public void displayScheduleForDate(int date) {
+    ArrayList<ScheduleEntry> scheduleForDate = getScheduleForDate(date);
+    StringBuilder scheduleDetails = new StringBuilder();
+    for (ScheduleEntry entry : scheduleForDate) {
+        scheduleDetails.append("Subject: ").append(entry.subject).append("\n");
+        scheduleDetails.append("Instructor: ").append(entry.instructor).append("\n");
+        scheduleDetails.append("Day: ").append(entry.day).append("\n");
+        scheduleDetails.append("Time: ").append(entry.time).append("\n\n");
+    }
+
+    if (scheduleDetails.length() == 0) {
+        scheduleDetails.append("No schedule for this date.");
+    }
+
+    JOptionPane.showMessageDialog(this, scheduleDetails.toString(), "Schedule for Date: " + date, JOptionPane.INFORMATION_MESSAGE);
+}
 }

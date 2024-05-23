@@ -21,7 +21,7 @@ public class Main {
             cardPanel.add(home, "homeScreen"); // home screen with name "homeScreen"
             
             // Add CalendarPanel
-            CalendarPanel calendarPanel = new CalendarPanel((CardLayout) cardPanel.getLayout(), cardPanel);
+            CalendarPanel calendarPanel = new CalendarPanel((CardLayout) cardPanel.getLayout(), cardPanel, home);
             cardPanel.add(calendarPanel, "calendar"); // calendar panel with name "calendar"
 
             home.setCardLayoutAndPanel((CardLayout) cardPanel.getLayout(), cardPanel);
