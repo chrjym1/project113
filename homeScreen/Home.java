@@ -3,16 +3,22 @@ package homeScreen;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+
 
 public class Home extends JPanel {
-    private JLabel welcomeLabel;
     private JPanel topPanel, leftPanel;
     private JLabel titleLabel;
     private JButton addSubjectBtn, removeSubjectBtn, updateSubjectBtn, resetBtn, calendarBtn;
-    private JTextField subjectNameField, instructorField, dateField;
+    private JTextField subjectNameField, instructorField;
     private JComboBox<String> dayComboBox, timeComboBox;
     private ArrayList<String> subjects = new ArrayList<>();
     private JComboBox<Integer> dateComboBox;
@@ -52,9 +58,6 @@ public class Home extends JPanel {
     }
 
     private void initializeComponents() {
-        // Welcome Label
-        welcomeLabel = new JLabel("Welcome, Home");
-        add(welcomeLabel, BorderLayout.NORTH);
 
         // Main Panel for schedule management components
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -89,22 +92,52 @@ public class Home extends JPanel {
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(tablePanel, BorderLayout.NORTH);
 
+        //styling for the JTable 
+        scheduleTable.setRowHeight(15);
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < scheduleTable.getColumnCount(); i++) {
+        scheduleTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+    }
+    
+        // Set custom header renderer
+        JTableHeader header = scheduleTable.getTableHeader();
+        header.setFont(new Font("Arial", Font.BOLD, 16));
+        header.setBackground(new Color(0, 120, 215));
+        header.setForeground(Color.WHITE);
+        header.setPreferredSize(new Dimension(header.getWidth(), 20));
+    
+        // Set grid color and selection colors
+        scheduleTable.setGridColor(Color.LIGHT_GRAY);
+        scheduleTable.setSelectionBackground(new Color(184, 207, 229));
+        scheduleTable.setSelectionForeground(Color.BLACK);
+
         // Input Fields Panel in the center
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15));
         JLabel nameLabel = new JLabel("Subject:");
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         subjectNameField = new JTextField();
-        subjectNameField.setFont(new Font("Arial", Font.PLAIN, 14));
+        subjectNameField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        subjectNameField.setToolTipText("Enter the subject name");
+
         JLabel instructorLabel = new JLabel("Instructor:");
         instructorLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         instructorField = new JTextField();
-        instructorField.setFont(new Font("Arial", Font.PLAIN, 14));
+        instructorField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        instructorField.setToolTipText("Enter the instructor name");
+
         JLabel dayLabel = new JLabel("Day:");
         dayLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
         dayComboBox = new JComboBox<>(days);
-        dayComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        dayComboBox.setToolTipText("Select the day of the week");
+
         JLabel timeLabel = new JLabel("Time:");
         timeLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         String[] times = {"6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM",
@@ -115,26 +148,45 @@ public class Home extends JPanel {
         timeComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
 
         JLabel dateLabel = new JLabel("Date:");
-        dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        // Populate JComboBox with numbers from 1 to 31
-        Integer[] daysOfMonth = new Integer[31];
-        for (int i = 0; i < 31; i++) {
-            daysOfMonth[i] = i + 1;
-        }
-        dateComboBox = new JComboBox<>(daysOfMonth);
-        dateComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+    dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        inputPanel.add(nameLabel);
-        inputPanel.add(subjectNameField);
-        inputPanel.add(instructorLabel);
-        inputPanel.add(instructorField);
-        inputPanel.add(dayLabel);
-        inputPanel.add(dayComboBox);
-        inputPanel.add(timeLabel);
-        inputPanel.add(timeComboBox);
-        inputPanel.add(dateLabel);
-        inputPanel.add(dateComboBox);
-        mainPanel.add(inputPanel, BorderLayout.CENTER);
+    // Get the current day of the week in full text
+    LocalDate currentDate = LocalDate.now();
+    DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
+    String currentDayName = currentDayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+    // Get the current date
+    int currentDayOfMonth = currentDate.getDayOfMonth();
+    int currentMonth = currentDate.getMonthValue();
+    int currentYear = currentDate.getYear();
+
+    // Get the number of days in the current month
+    java.time.YearMonth currentYearMonth = java.time.YearMonth.of(currentYear, currentMonth);
+    int daysInMonth = currentYearMonth.lengthOfMonth();
+
+    // Initialize JComboBox with numbers from 1 to the number of days in the current month
+    Integer[] daysOfMonth = new Integer[daysInMonth];
+    for (int i = 0; i < daysInMonth; i++) {
+        daysOfMonth[i] = i + 1;
+    }
+
+    // Initialize dateComboBox with current date as default selected date
+    dateComboBox = new JComboBox<>(daysOfMonth);
+    dateComboBox.setSelectedItem(currentDayOfMonth);
+    dateComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+
+    dayComboBox.setSelectedItem(currentDayName);
+    inputPanel.add(nameLabel);
+    inputPanel.add(subjectNameField);
+    inputPanel.add(instructorLabel);
+    inputPanel.add(instructorField);
+    inputPanel.add(dayLabel);
+    inputPanel.add(dayComboBox);
+    inputPanel.add(timeLabel);
+    inputPanel.add(timeComboBox);
+    inputPanel.add(dateLabel);
+    inputPanel.add(dateComboBox);
+    mainPanel.add(inputPanel, BorderLayout.CENTER);
 
         // Buttons Action Listeners
         addSubjectBtn.addActionListener(new ActionListener() {
@@ -151,7 +203,9 @@ public class Home extends JPanel {
 
         updateSubjectBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                updateSubject();
+                if (validateInputs()) {
+                    updateSubject();
+                }
             }
         });
 
@@ -170,22 +224,62 @@ public class Home extends JPanel {
     }
 
     private void addSubject() {
-        String subject = subjectNameField.getText();
-        String instructor = instructorField.getText();
-        String day = (String) dayComboBox.getSelectedItem();
-        String time = (String) timeComboBox.getSelectedItem();
-        int date = (int) dateComboBox.getSelectedItem();
+        if (validateInputs()) {
+            String subject = subjectNameField.getText();
+            String instructor = instructorField.getText();
+            String day = (String) dayComboBox.getSelectedItem();
+            String time = (String) timeComboBox.getSelectedItem();
+            int date = (int) dateComboBox.getSelectedItem();
 
-        // Add subject to subjects list
-        subjects.add(subject);
+        // Check if the subject already exists in the schedule
+        if (subjects.contains(subject)) {
+            // Check for conflicting schedule for the same subject on the same day and time
+            for (ScheduleEntry entry : schedules) {
+                if (entry.subject.equals(subject) && entry.day.equals(day) && entry.time.equals(time)) {
+                    JOptionPane.showMessageDialog(this, "There is a conflicting schedule for the same subject at the same time on " + day + ". Please select a different time.");
+                    return;
+                }
+            }
+        }
 
-         // Add ScheduleEntry to schedules list
-         ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
-         schedules.add(scheduleEntry); // Add this line
+        // Check if there's already a schedule for the same subject on the same date and day, but not the same time
+        boolean scheduleExists = false;
+        for (ScheduleEntry entry : schedules) {
+            if (entry.subject.equals(subject) && entry.day.equals(day) && entry.date == date && !entry.time.equals(time)) {
+                scheduleExists = true;
+                break;
+            }
+        }
+        if (scheduleExists) {
+            JOptionPane.showMessageDialog(this, "There is already a schedule for the same subject on " + day + " " + date + " but at a different time. Adding new schedule.");
+        }
+
+        // Check if the new schedule does not match the days of the week and the date
+        boolean mismatchExists = false;
+        for (ScheduleEntry entry : schedules) {
+            if (entry.subject.equals(subject) && (!entry.day.equals(day) || entry.date != date)) {
+                mismatchExists = true;
+                break;
+            }
+        }
+        if (mismatchExists) {
+            JOptionPane.showMessageDialog(this, "The new schedule does not match the days of the week or the date of the existing schedules for the same subject.");
+            return;
+        }
+
+        // Add subject to the subjects set if it does not already exist
+        if (!subjects.contains(subject)) {
+            subjects.add(subject);
+        }
+
+        // Add ScheduleEntry to schedules list
+        ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
+        schedules.add(scheduleEntry);
 
         // Add row to tableModel
         tableModel.addRow(new Object[]{subject, day, time, instructor, date});
     }
+}
 
     private void removeSubject() {
         int selectedRow = scheduleTable.getSelectedRow();
@@ -225,18 +319,45 @@ public class Home extends JPanel {
         instructorField.setText("");
         dayComboBox.setSelectedIndex(0);
         timeComboBox.setSelectedIndex(0);
-        dateField.setText("");
     }
 
     private void showCalendar() {
         cardLayout.show(cardPanel, "calendar");
     }
 
-    
+    private boolean validateInputs() {
+        String subject = subjectNameField.getText().trim();
+        String instructor = instructorField.getText().trim();
+        
+        
+        if (subject.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Subject name cannot be empty.");
+            return false;
+        }
 
-    public void displayWelcomeMessage() {
-        welcomeLabel.setText("Hello, Welcome Home");
+        if (instructor.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Instructor name cannot be empty.");
+            return false;
+        }
+
+        if (dayComboBox.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "Please select a day.");
+            return false;
+        }
+
+        if (timeComboBox.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "Please select a time.");
+            return false;
+        }
+
+        if (dateComboBox.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "Please select a date.");
+            return false;
+        }
+
+        return true;
     }
+    
     
   // Method to fetch schedule entries for a specific date
   public ArrayList<ScheduleEntry> getScheduleForDate(int date) {
