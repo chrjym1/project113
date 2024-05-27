@@ -230,54 +230,53 @@ public class Home extends JPanel {
             String day = (String) dayComboBox.getSelectedItem();
             String time = (String) timeComboBox.getSelectedItem();
             int date = (int) dateComboBox.getSelectedItem();
-
-        // Check if the subject already exists in the schedule
-        if (subjects.contains(subject)) {
-            // Check for conflicting schedule for the same subject on the same day and time
-            for (ScheduleEntry entry : schedules) {
-                if (entry.subject.equals(subject) && entry.day.equals(day) && entry.time.equals(time)) {
-                    JOptionPane.showMessageDialog(this, "There is a conflicting schedule for the same subject at the same time on " + day + ". Please select a different time.");
-                    return;
-                }
-            }
-        }
-
-        // Check if there's already a schedule for the same subject on the same date and day, but not the same time
-        boolean scheduleExists = false;
-        for (ScheduleEntry entry : schedules) {
-            if (entry.subject.equals(subject) && entry.day.equals(day) && entry.date == date && !entry.time.equals(time)) {
-                scheduleExists = true;
-                break;
-            }
-        }
-        if (scheduleExists) {
-            JOptionPane.showMessageDialog(this, "There is already a schedule for the same subject on " + day + " " + date + " but at a different time. Adding new schedule.");
-        }
-
-        // Check if the new schedule does not match the days of the week and the date
-        boolean mismatchExists = false;
-        for (ScheduleEntry entry : schedules) {
-            if (entry.subject.equals(subject) && (!entry.day.equals(day) || entry.date != date)) {
-                mismatchExists = true;
-                break;
-            }
-        }
-        if (mismatchExists) {
-            JOptionPane.showMessageDialog(this, "The new schedule does not match the days of the week or the date of the existing schedules for the same subject.");
+if (subjects.contains(subject)) {
+    // Check for conflicting schedule for the same subject on the same day, time, and date
+    for (ScheduleEntry entry : schedules) {
+        if (entry.subject.equals(subject) && entry.day.equals(day) && entry.time.equals(time) && entry.date == date) {
+            JOptionPane.showMessageDialog(this, "There is a conflicting schedule for the same subject at the same time on " + day + ". Please select a different time.");
             return;
         }
+    }
 
-        // Add subject to the subjects set if it does not already exist
-        if (!subjects.contains(subject)) {
-            subjects.add(subject);
+    // Check if there's already a schedule for the same subject on the same date and day, but not the same time
+    boolean scheduleExists = false;
+    for (ScheduleEntry entry : schedules) {
+        if (entry.subject.equals(subject) && entry.day.equals(day) && entry.date == date && !entry.time.equals(time)) {
+            scheduleExists = true;
+            break;
         }
+    }
+    if (scheduleExists) {
+        JOptionPane.showMessageDialog(this, "There is already a schedule for the same subject on " + day + " " + date + " but at a different time. Adding new schedule.");
+        // Allowing the addition to proceed in this case
+    }
 
-        // Add ScheduleEntry to schedules list
-        ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
-        schedules.add(scheduleEntry);
+    // Check if the new schedule does not match the days of the week and the date
+    boolean mismatchExists = false;
+    for (ScheduleEntry entry : schedules) {
+        if (entry.subject.equals(subject) && entry.date == date && (!entry.day.equals(day) || entry.time.equals(time))) {
+            mismatchExists = true;
+            break;
+        }
+    }
+    if (mismatchExists) {
+        JOptionPane.showMessageDialog(this, "The new schedule does not match the days of the week or the date of the existing schedules for the same subject.");
+        return;
+    }
+}
 
-        // Add row to tableModel
-        tableModel.addRow(new Object[]{subject, day, time, instructor, date});
+// Add subject to the subjects set if it does not already exist
+if (!subjects.contains(subject)) {
+    subjects.add(subject);
+}
+
+// Add ScheduleEntry to schedules list
+ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
+schedules.add(scheduleEntry);
+
+// Add row to tableModel
+tableModel.addRow(new Object[]{subject, day, time, instructor, date});
     }
 }
 
@@ -292,28 +291,84 @@ public class Home extends JPanel {
         }
     }
 
+
     private void updateSubject() {
         int selectedRow = scheduleTable.getSelectedRow();
         if (selectedRow != -1) {
-            String subject = subjectNameField.getText();
-            String instructor = instructorField.getText();
-            String day = (String) dayComboBox.getSelectedItem();
-            String time = (String) timeComboBox.getSelectedItem();
-            int date = (int) dateComboBox.getSelectedItem();
-
-            subjects.set(selectedRow, subject);
-            schedules.set(selectedRow, new ScheduleEntry(subject, instructor, day, time, date));
-            // Update row in tableModel
-            tableModel.setValueAt(subject, selectedRow, 0);
-            tableModel.setValueAt(day, selectedRow, 1);
-            tableModel.setValueAt(time, selectedRow, 2);
-            tableModel.setValueAt(instructor, selectedRow, 3);
-            tableModel.setValueAt(date, selectedRow, 4);
+            // Get the selected ScheduleEntry
+            ScheduleEntry selectedEntry = schedules.get(selectedRow);
+    
+            // Options for the user to select which fields to update
+            String[] options = {"Subject", "Instructor", "Day", "Time", "Date"};
+            String selectedOption = (String) JOptionPane.showInputDialog(this,
+                    "Select the field to update:", "Update Subject",
+                    JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+    
+            // Process based on the selected option
+            if (selectedOption != null) {
+                switch (selectedOption) {
+                    case "Subject":
+                        String newSubject = JOptionPane.showInputDialog(this, "Enter new subject:");
+                        if (newSubject != null && !newSubject.isEmpty()) {
+                            selectedEntry.subject = newSubject;
+                            tableModel.setValueAt(newSubject, selectedRow, 0);
+                            JOptionPane.showMessageDialog(this, "Subject updated successfully.");
+                        }
+                        break;
+                    case "Instructor":
+                        String newInstructor = JOptionPane.showInputDialog(this, "Enter new instructor:");
+                        if (newInstructor != null && !newInstructor.isEmpty()) {
+                            selectedEntry.instructor = newInstructor;
+                            tableModel.setValueAt(newInstructor, selectedRow, 3);
+                            JOptionPane.showMessageDialog(this, "Instructor updated successfully.");
+                        }
+                        break;
+                    case "Day":
+                        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+                        String newDay = (String) JOptionPane.showInputDialog(this,
+                                "Select new day:", "Update Day",
+                                JOptionPane.PLAIN_MESSAGE, null, days, days[0]);
+                        if (newDay != null) {
+                            selectedEntry.day = newDay;
+                            tableModel.setValueAt(newDay, selectedRow, 1);
+                            JOptionPane.showMessageDialog(this, "Day updated successfully.");
+                        }
+                        break;
+                    case "Time":
+                        String[] times = {"6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM",
+                                "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM",
+                                "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM",
+                                "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"};
+                        String newTime = (String) JOptionPane.showInputDialog(this,
+                                "Select new time:", "Update Time",
+                                JOptionPane.PLAIN_MESSAGE, null, times, times[0]);
+                        if (newTime != null) {
+                            selectedEntry.time = newTime;
+                            tableModel.setValueAt(newTime, selectedRow, 2);
+                            JOptionPane.showMessageDialog(this, "Time updated successfully.");
+                        }
+                        break;
+                    case "Date":
+                        Integer[] daysOfMonth = new Integer[31];
+                        for (int i = 0; i < 31; i++) {
+                            daysOfMonth[i] = i + 1;
+                        }
+                        Integer newDate = (Integer) JOptionPane.showInputDialog(this,
+                                "Select new date:", "Update Date",
+                                JOptionPane.PLAIN_MESSAGE, null, daysOfMonth, selectedEntry.date);
+                        if (newDate != null) {
+                            selectedEntry.date = newDate;
+                            tableModel.setValueAt(newDate, selectedRow, 4);
+                            JOptionPane.showMessageDialog(this, "Date updated successfully.");
+                        }
+                        break;
+                }
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Please select a subject to update.");
         }
     }
-
+    
     private void resetForm() {
         subjectNameField.setText("");
         instructorField.setText("");
