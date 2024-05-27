@@ -169,12 +169,6 @@ private boolean isValidLoginCredentials(String username, String password) {
         return !username.isEmpty() && password.length() >= 8;
     }
 
-    /**
-     * @author: Lexuzh Herrera  
-     * @date:  05/21/2024
-     * 
-     * add enter key functionality when loging in.
-     */
     private void addEnterKeyListener() {
         // Create an action for the Enter key
         Action enterAction = new AbstractAction() {

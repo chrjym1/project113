@@ -29,7 +29,6 @@ public class Home extends JPanel {
 
     private ArrayList<ScheduleEntry> schedules = new ArrayList<>();
     // ...
-    
     // ScheduleEntry inner class to hold schedule details
     class ScheduleEntry {
         String subject;
@@ -116,6 +115,7 @@ public class Home extends JPanel {
         // Input Fields Panel in the center
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15));
+        inputPanel.setBackground(new Color(240, 240, 240)); // Set background color
         JLabel nameLabel = new JLabel("Subject:");
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         subjectNameField = new JTextField();
@@ -195,11 +195,24 @@ public class Home extends JPanel {
             }
         });
 
+        //button styling 
+        addSubjectBtn.setBackground(new Color(0, 120, 215));
+        addSubjectBtn.setForeground(Color.WHITE);
+        addSubjectBtn.setFocusPainted(false);
+        addSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        addSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
+
         removeSubjectBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 removeSubject();
             }
         });
+
+        removeSubjectBtn.setBackground(new Color(0, 120, 215));
+        removeSubjectBtn.setForeground(Color.WHITE);
+        removeSubjectBtn.setFocusPainted(false);
+        removeSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        removeSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
         updateSubjectBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -209,11 +222,23 @@ public class Home extends JPanel {
             }
         });
 
+        updateSubjectBtn.setBackground(new Color(0, 120, 215));
+        updateSubjectBtn.setForeground(Color.WHITE);
+        updateSubjectBtn.setFocusPainted(false);
+        updateSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        updateSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
+
         resetBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 resetForm();
             }
         });
+
+        resetBtn.setBackground(new Color(0, 120, 215));
+        resetBtn.setForeground(Color.WHITE);
+        resetBtn.setFocusPainted(false);
+        resetBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        resetBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
         calendarBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -221,6 +246,12 @@ public class Home extends JPanel {
                 showCalendar();
             }
         });
+
+        calendarBtn.setBackground(new Color(0, 120, 215));
+        calendarBtn.setForeground(Color.WHITE);
+        calendarBtn.setFocusPainted(false);
+        calendarBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        calendarBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
     }
 
     private void addSubject() {

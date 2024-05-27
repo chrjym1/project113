@@ -1,6 +1,7 @@
 package homeScreen;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,8 +32,9 @@ public class CalendarPanel extends JPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
         monthLabel = new JLabel("", SwingConstants.CENTER);
         monthLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        prevButton = new JButton("<");
-        nextButton = new JButton(">");
+        monthLabel.setForeground(new Color(0x2E8B57));
+        prevButton = createStyledButton("<");
+        nextButton = createStyledButton(">");
 
         topPanel.add(prevButton, BorderLayout.WEST);
         topPanel.add(monthLabel, BorderLayout.CENTER);
@@ -43,6 +45,12 @@ public class CalendarPanel extends JPanel {
         calendarTable = new JTable(tableModel);
         calendarTable.setRowSelectionAllowed(false);
         calendarTable.setCellSelectionEnabled(true);
+        calendarTable.setFont(new Font("Arial", Font.PLAIN, 18));
+        calendarTable.setRowHeight(40);
+        calendarTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        calendarTable.getTableHeader().setBackground(new Color(0x8FBC8F));
+        calendarTable.getTableHeader().setForeground(Color.WHITE);
+        calendarTable.setGridColor(Color.LIGHT_GRAY);
 
         calendarTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -57,13 +65,38 @@ public class CalendarPanel extends JPanel {
             }
         });
 
+        calendarTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel cellLabel = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                cellLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                cellLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+                if (value != null) {
+                    cellLabel.setForeground(Color.BLACK);
+                    cellLabel.setBackground(Color.WHITE);
+                } else {
+                    cellLabel.setForeground(Color.LIGHT_GRAY);
+                    cellLabel.setBackground(Color.WHITE);
+                }
+                if (row % 2 == 0) {
+                    cellLabel.setBackground(new Color(0xF5F5F5));
+                }
+                if (isSelected) {
+                    cellLabel.setBackground(new Color(0x87CEEB));
+                    cellLabel.setForeground(Color.WHITE);
+                }
+                return cellLabel;
+            }
+        });
+
         dayLabel = new JLabel("", SwingConstants.CENTER);
         dayLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        dayLabel.setForeground(new Color(0x2E8B57));
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(dayLabel, BorderLayout.NORTH);
 
-        JButton backButton = new JButton("Back");
+        JButton backButton = createStyledButton("Back");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,5 +142,15 @@ public class CalendarPanel extends JPanel {
             }
             tableModel.setValueAt(day, row, column);
         }
+    }
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 18));
+        button.setBackground(new Color(0x2E8B57));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        return button;
     }
 }
