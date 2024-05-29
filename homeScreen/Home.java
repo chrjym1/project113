@@ -202,18 +202,21 @@ public class Home extends JPanel {
         addSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
         addSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+        // Buttons Action Listeners
         removeSubjectBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 removeSubject();
             }
         });
 
+        //Button styling 
         removeSubjectBtn.setBackground(new Color(0, 120, 215));
         removeSubjectBtn.setForeground(Color.WHITE);
         removeSubjectBtn.setFocusPainted(false);
         removeSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
         removeSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+        // Buttons Action Listeners
         updateSubjectBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (validateInputs()) {
@@ -222,24 +225,28 @@ public class Home extends JPanel {
             }
         });
 
+        //Button styling 
         updateSubjectBtn.setBackground(new Color(0, 120, 215));
         updateSubjectBtn.setForeground(Color.WHITE);
         updateSubjectBtn.setFocusPainted(false);
         updateSubjectBtn.setFont(new Font("Arial", Font.BOLD, 14));
         updateSubjectBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+        // Buttons Action Listeners
         resetBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 resetForm();
             }
         });
 
+        //Button styling 
         resetBtn.setBackground(new Color(0, 120, 215));
         resetBtn.setForeground(Color.WHITE);
         resetBtn.setFocusPainted(false);
         resetBtn.setFont(new Font("Arial", Font.BOLD, 14));
         resetBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
 
+        // Buttons Action Listeners
         calendarBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Switch to the calendar panel
@@ -247,12 +254,14 @@ public class Home extends JPanel {
             }
         });
 
+        //Button styling 
         calendarBtn.setBackground(new Color(0, 120, 215));
         calendarBtn.setForeground(Color.WHITE);
         calendarBtn.setFocusPainted(false);
         calendarBtn.setFont(new Font("Arial", Font.BOLD, 14));
         calendarBtn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
     }
+    
 
     private void addSubject() {
         if (validateInputs()) {
@@ -261,56 +270,76 @@ public class Home extends JPanel {
             String day = (String) dayComboBox.getSelectedItem();
             String time = (String) timeComboBox.getSelectedItem();
             int date = (int) dateComboBox.getSelectedItem();
-if (subjects.contains(subject)) {
-    // Check for conflicting schedule for the same subject on the same day, time, and date
-    for (ScheduleEntry entry : schedules) {
-        if (entry.subject.equals(subject) && entry.day.equals(day) && entry.time.equals(time) && entry.date == date) {
-            JOptionPane.showMessageDialog(this, "There is a conflicting schedule for the same subject at the same time on " + day + ". Please select a different time.");
-            return;
+            
+            // Check if the day matches the actual day of the week for the selected date
+            LocalDate selectedDate = LocalDate.now().withDayOfMonth(date);
+            DayOfWeek actualDayOfWeek = selectedDate.getDayOfWeek();
+            String actualDayName = actualDayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+            
+            if (!day.equals(actualDayName)) {
+                JOptionPane.showMessageDialog(this, "The selected day does not match the actual day of the week for the selected date. Please select the correct day.");
+                return;
+            }
+    
+            // Check for conflicting schedule for any subject on the same day, time, and date
+            for (ScheduleEntry entry : schedules) {
+                if (entry.day.equals(day) && entry.time.equals(time) && entry.date == date) {
+                    JOptionPane.showMessageDialog(this, "There is a conflicting schedule at the same time on " + day + ". Please select a different time or date.");
+                    return;
+                }
+            }
+            
+            if (subjects.contains(subject)) {
+                // Check for conflicting schedule for the same subject on the same day, time, and date
+                for (ScheduleEntry entry : schedules) {
+                    if (entry.subject.equals(subject) && entry.day.equals(day) && entry.time.equals(time) && entry.date == date) {
+                        JOptionPane.showMessageDialog(this, "There is a conflicting schedule for the same subject at the same time on " + day + ". Please select a different time.");
+                        return;
+                    }
+                }
+        
+                // Check if there's already a schedule for the same subject on the same date and day, but not the same time
+                boolean scheduleExists = false;
+                for (ScheduleEntry entry : schedules) {
+                    if (entry.subject.equals(subject) && entry.day.equals(day) && entry.date == date && !entry.time.equals(time)) {
+                        scheduleExists = true;
+                        break;
+                    }
+                }
+                if (scheduleExists) {
+                    JOptionPane.showMessageDialog(this, "There is already a schedule for the same subject on " + day + " " + date + " but at a different time. Adding new schedule.");
+                    // Allowing the addition to proceed in this case
+                }
+        
+                // Check if the new schedule does not match the days of the week and the date
+                boolean mismatchExists = false;
+                for (ScheduleEntry entry : schedules) {
+                    if (entry.subject.equals(subject) && entry.date == date && (!entry.day.equals(day) || entry.time.equals(time))) {
+                        mismatchExists = true;
+                        break;
+                    }
+                }
+                if (mismatchExists) {
+                    JOptionPane.showMessageDialog(this, "The new schedule does not match the days of the week or the date of the existing schedules for the same subject.");
+                    return;
+                }
+            }
+        
+            // Add subject to the subjects set if it does not already exist
+            if (!subjects.contains(subject)) {
+                subjects.add(subject);
+            }
+        
+            // Add ScheduleEntry to schedules list
+            ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
+            schedules.add(scheduleEntry);
+        
+            // Add row to tableModel
+            tableModel.addRow(new Object[]{subject, day, time, instructor, date});
         }
     }
-
-    // Check if there's already a schedule for the same subject on the same date and day, but not the same time
-    boolean scheduleExists = false;
-    for (ScheduleEntry entry : schedules) {
-        if (entry.subject.equals(subject) && entry.day.equals(day) && entry.date == date && !entry.time.equals(time)) {
-            scheduleExists = true;
-            break;
-        }
-    }
-    if (scheduleExists) {
-        JOptionPane.showMessageDialog(this, "There is already a schedule for the same subject on " + day + " " + date + " but at a different time. Adding new schedule.");
-        // Allowing the addition to proceed in this case
-    }
-
-    // Check if the new schedule does not match the days of the week and the date
-    boolean mismatchExists = false;
-    for (ScheduleEntry entry : schedules) {
-        if (entry.subject.equals(subject) && entry.date == date && (!entry.day.equals(day) || entry.time.equals(time))) {
-            mismatchExists = true;
-            break;
-        }
-    }
-    if (mismatchExists) {
-        JOptionPane.showMessageDialog(this, "The new schedule does not match the days of the week or the date of the existing schedules for the same subject.");
-        return;
-    }
-}
-
-// Add subject to the subjects set if it does not already exist
-if (!subjects.contains(subject)) {
-    subjects.add(subject);
-}
-
-// Add ScheduleEntry to schedules list
-ScheduleEntry scheduleEntry = new ScheduleEntry(subject, instructor, day, time, date);
-schedules.add(scheduleEntry);
-
-// Add row to tableModel
-tableModel.addRow(new Object[]{subject, day, time, instructor, date});
-    }
-}
-
+    
+        
 private void removeSubject() {
     int selectedRow = scheduleTable.getSelectedRow();
     if (selectedRow != -1) {
