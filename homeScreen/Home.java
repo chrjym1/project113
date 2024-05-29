@@ -311,16 +311,23 @@ tableModel.addRow(new Object[]{subject, day, time, instructor, date});
     }
 }
 
-    private void removeSubject() {
-        int selectedRow = scheduleTable.getSelectedRow();
-        if (selectedRow != -1) {
-            subjects.remove(selectedRow);
-            schedules.remove(selectedRow);
-            tableModel.removeRow(selectedRow);
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a subject to remove.");
-        }
+private void removeSubject() {
+    int selectedRow = scheduleTable.getSelectedRow();
+    if (selectedRow != -1) {
+        // Remove the subject from both lists
+        String subjectToRemove = (String) tableModel.getValueAt(selectedRow, 0);
+        subjects.remove(subjectToRemove);
+        
+        // Remove all occurrences of the subject from the schedules list
+        schedules.removeIf(entry -> entry.subject.equals(subjectToRemove));
+
+        // Remove the row from the table model
+        tableModel.removeRow(selectedRow);
+    } else {
+        JOptionPane.showMessageDialog(this, "Please select a subject to remove.");
     }
+}
+
 
 
     private void updateSubject() {
